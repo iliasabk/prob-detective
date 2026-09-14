@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Probability Detective — when does a pattern mean something?</title>
+<meta name="description" content="A 15-minute interactive lesson on probability, sampling variation and fair games. For learners around age 12.">
+<style>
+:root{--bg:#101a17;--panel:#182420;--panel2:#1f2f29;--ink:#ece7d8;--muted:#a4b3ab;--accent:#e5b567;--accent2:#7fc8a9;--danger:#e0806f;--ok:#93c47d;--line:#33453e;--focus:#ffd166}
+*{box-sizing:border-box}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+body{margin:0;font-family:"Avenir Next","Segoe UI",Verdana,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55}
+.wrap{max-width:880px;margin:0 auto;padding:0 16px 64px}
+header{padding:28px 0 8px;border-bottom:2px solid var(--line);margin-bottom:20px}
+h1{font-size:1.85rem;margin:0 0 4px;letter-spacing:.5px}
+h1 .tag{color:var(--accent)}
+.sub{color:var(--muted);font-size:.95rem;margin:0}
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:18px 0 22px}
+nav.tabs button{flex:1 1 auto;min-width:120px;padding:11px 10px;background:var(--panel);color:var(--muted);border:1px solid var(--line);border-radius:8px;font:inherit;font-size:.88rem;cursor:pointer}
+nav.tabs button[aria-current="true"]{background:var(--panel2);color:var(--ink);border-color:var(--accent);font-weight:bold}
+section.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px;margin-bottom:18px}
+h2{font-size:1.22rem;margin:0 0 10px;color:var(--accent)}
+h3{font-size:1.0rem;margin:16px 0 6px;color:var(--accent2)}
+p{margin:8px 0}
+.small{font-size:.85rem;color:var(--muted)}
+button.btn{display:inline-block;padding:10px 18px;background:var(--accent);color:#211503;border:none;border-radius:8px;font:inherit;font-weight:bold;font-size:.95rem;cursor:pointer;min-height:44px}
+button.btn.secondary{background:var(--panel2);color:var(--ink);border:1px solid var(--line)}
+button.btn:disabled{opacity:.5;cursor:not-allowed}
+button.btn.ghost{background:transparent;border:1px dashed var(--line);color:var(--muted)}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.quiz{margin:12px 0}
+.quiz label{display:block;padding:11px 12px;margin:7px 0;background:var(--panel2);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:.95rem}
+.quiz input{margin-right:9px;transform:scale(1.15)}
+.fb{margin:12px 0;padding:12px 14px;border-radius:8px;font-size:.95rem;display:none}
+.fb.show{display:block}
+.fb.good{background:rgba(147,196,125,.13);border:1px solid var(--ok)}
+.fb.bad{background:rgba(224,128,111,.13);border:1px solid var(--danger)}
+.fb .mark{font-weight:bold;margin-right:6px}
+svg.chart{display:block;width:100%;height:auto;background:var(--panel2);border-radius:8px;margin:10px 0}
+svg text{fill:var(--muted);font-size:11px;font-family:ui-monospace,Menlo,monospace}
+svg .axislbl{fill:var(--ink);font-size:12px}
+svg .bar{fill:var(--accent)}
+svg .bar2{fill:var(--accent2)}
+svg .exp{stroke:var(--ok);stroke-dasharray:6 4;stroke-width:2;fill:none}
+table.dt{width:100%;border-collapse:collapse;font-size:.85rem;margin:10px 0}
+table.dt caption{text-align:left;color:var(--muted);font-size:.8rem;padding-bottom:6px}
+table.dt th,table.dt td{border:1px solid var(--line);padding:6px 9px;text-align:right}
+table.dt th{background:var(--panel2);color:var(--ink)}
+table.dt th:first-child,table.dt td:first-child{text-align:left}
+.controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:12px 0}
+input[type=range]{width:200px;min-height:44px;accent-color:var(--accent)}
+textarea,input[type=text]{background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:10px;font:inherit;font-size:.95rem;width:100%}
+textarea{min-height:64px;resize:vertical}
+select{background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:10px;font:inherit;min-height:44px}
+.rangeval{font-family:ui-monospace,Menlo,monospace;color:var(--accent);font-size:.9rem}
+.prog{height:6px;background:var(--panel2);border-radius:3px;margin:14px 0 0;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--accent);width:0}
+.summary-box{border:2px solid var(--accent);border-radius:12px;padding:22px;background:var(--panel)}
+.kbd{font-family:ui-monospace,Menlo,monospace;background:var(--panel2);padding:1px 6px;border-radius:4px;border:1px solid var(--line);font-size:.85em}
+.defn{border-left:3px solid var(--accent2);padding:2px 12px;margin:10px 0;font-size:.9rem;color:var(--muted)}
+footer{margin-top:34px;color:var(--muted);font-size:.8rem;border-top:1px solid var(--line);padding-top:14px}
+@media (max-width:520px){h1{font-size:1.4rem}nav.tabs button{min-width:100%}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>Probability Detective <span class="tag">— when does a pattern mean something?</span></h1>
+  <p class="sub">A 10–15 minute lab for readers around 12. You will flip coins, roll dice and design a fair game — then argue from evidence, not gut feeling. Everything is simulated on your own device; nothing is real gambling and nothing is collected.</p>
+  <div class="prog" role="progressbar" aria-label="Lesson progress" aria-valuemin="0" aria-valuemax="3" aria-valuenow="0"><i id="progfill"></i></div>
+</header>
+
+<nav class="tabs" aria-label="Activities">
+  <button id="tab-intro" aria-current="true">Start here</button>
+  <button id="tab-a1">Lab 1 · Coin lab</button>
+  <button id="tab-a2">Lab 2 · Dice lab</button>
+  <button id="tab-a3">Lab 3 · Fair game</button>
+  <button id="tab-sum" disabled>Your report</button>
+</nav>
+
+<section id="view-intro" class="card">
+  <h2>Briefing</h2>
+  <p>A detective's rule: <strong>theory says what should happen; experiments show what did happen</strong> — and the two rarely match exactly in small samples.</p>
+  <ul>
+    <li><strong>Lab 1 —</strong> flip a coin 10, 100 and 1,000 times and watch the proportion of heads settle;</li>
+    <li><strong>Lab 2 —</strong> roll two dice and discover why some totals are common and others rare;</li>
+    <li><strong>Lab 3 —</strong> build a points game, test it, and judge whether both sides have an equal chance.</li>
+  </ul>
+  <div class="defn"><strong>Inline definition:</strong> <em>theoretical probability</em> = what the model predicts (e.g. 1/2 for heads). <em>Observed frequency</em> = what your trials actually produced. They are cousins, not twins.</div>
+  <p class="small">Takes about 10–15 minutes. Keyboard works everywhere (<span class="kbd">Tab</span> + <span class="kbd">Enter</span>). Your progress stays in this page only.</p>
+  <button class="btn" id="start">Open lab 1</button>
+</section>
+
+<!-- ============ LAB 1: COINS ============ -->
+<section id="view-a1" class="card" hidden>
+  <h2>Lab 1 · Coin laboratory</h2>
+  <p><strong>Predict first.</strong> If you flip a fair coin 10 times, how many heads do you expect? Type your guess — you can change your mind later, no penalty.</p>
+  <div class="controls">
+    <label for="a1pred">My prediction: <input type="text" id="a1pred" inputmode="numeric" style="width:90px;display:inline-block" aria-label="predicted heads in 10 flips"> heads in 10 flips</label>
+  </div>
+  <p>Now run experiments. Each button flips the coin that many times. Try a small run, then a big one.</p>
+  <div class="controls">
+    <button class="btn secondary" data-coin="10">Flip 10</button>
+    <button class="btn secondary" data-coin="100">Flip 100</button>
+    <button class="btn secondary" data-coin="1000">Flip 1,000</button>
+    <label for="a1bias">Coin: <select id="a1bias" aria-label="coin fairness">
+      <option value="0.5">fair coin (50%)</option>
+      <option value="0.7">biased coin — 70% heads (labelled!)</option>
+      <option value="0.3">biased coin — 30% heads (labelled!)</option>
+    </select></label>
+  </div>
+  <div id="a1chart" role="img" aria-label="Chart of observed heads proportions per experiment"></div>
+  <table class="dt">
+    <caption>Table: each experiment's result vs the theoretical value</caption>
+    <thead><tr><th>Run</th><th>Flips</th><th>Heads</th><th>Observed %</th><th>Expected %</th></tr></thead>
+    <tbody id="a1rows"><tr><td colspan="5" class="small">No experiments yet.</td></tr></tbody>
+  </table>
+  <div class="fb" id="a1fb" role="status"></div>
+  <div class="quiz" role="radiogroup" aria-labelledby="a1q">
+    <p id="a1q"><strong>Checkpoint.</strong> Your 10-flip run gave 7 heads. Does that prove the coin is unfair?</p>
+    <label><input type="radio" name="a1" value="a"> Yes — 70% is not 50%, so the coin is rigged</label>
+    <label><input type="radio" name="a1" value="b"> No — small samples wobble; run 1,000 and compare</label>
+    <label><input type="radio" name="a1" value="c"> Yes — but only if it happens twice in a row</label>
+  </div>
+  <div class="controls">
+    <button class="btn" id="a1check">Check</button>
+    <button class="btn ghost" id="a1hint">Hint</button>
+    <button class="btn secondary" id="a1next" disabled>Next lab</button>
+  </div>
+</section>
+
+<!-- ============ LAB 2: DICE ============ -->
+<section id="view-a2" class="card" hidden>
+  <h2>Lab 2 · Dice investigation</h2>
+  <p>Roll <strong>two dice</strong> and add them. <strong>Predict:</strong> is every total from 2 to 12 equally likely?</p>
+  <div class="quiz" role="radiogroup" aria-labelledby="a2q0">
+    <label><input type="radio" name="a2p" value="eq"> Yes — 11 totals, so each is 1/11</label>
+    <label><input type="radio" name="a2p" value="ne"> No — some totals have more ways to happen</label>
+  </div>
+  <div class="controls">
+    <button class="btn secondary" data-dice="60">Roll 60 pairs</button>
+    <button class="btn secondary" data-dice="600">Roll 600 pairs</button>
+  </div>
+  <div id="a2chart" role="img" aria-label="Histogram of two-dice sums versus theoretical expectations"></div>
+  <table class="dt">
+    <caption>Table: observed share of each total vs its theoretical probability</caption>
+    <thead><tr><th>Total</th><th>Observed %</th><th>Expected %</th><th>Ways to make it</th></tr></thead>
+    <tbody id="a2rows"></tbody>
+  </table>
+  <div class="fb" id="a2fb" role="status"></div>
+  <div class="quiz" role="radiogroup" aria-labelledby="a2q">
+    <p id="a2q"><strong>Checkpoint.</strong> Why does 7 come up so much more than 12?</p>
+    <label><input type="radio" name="a2" value="a"> The dice are biased toward middle numbers</label>
+    <label><input type="radio" name="a2" value="b"> Six different combinations make 7; only one makes 12</label>
+    <label><input type="radio" name="a2" value="c"> It is luck — next run will favour 12 instead</label>
+  </div>
+  <div class="controls">
+    <button class="btn" id="a2check">Check</button>
+    <button class="btn ghost" id="a2hint">Hint</button>
+    <button class="btn secondary" id="a2next" disabled>Next lab</button>
+  </div>
+</section>
+
+<!-- ============ LAB 3: FAIR GAME ============ -->
+<section id="view-a3" class="card" hidden>
+  <h2>Lab 3 · Fair-game designer</h2>
+  <p>Design a points game: <strong>You</strong> flip the mystery coin; your friend picks the rule. If heads, <em>you</em> score your points; if tails, <em>your friend</em> scores theirs. A fair game gives both sides the same expected advantage per flip.</p>
+  <div class="controls">
+    <label for="a3coin">Coin: <select id="a3coin"><option value="0.5">fair (50% heads)</option><option value="0.7">heads-biased (70%)</option><option value="0.3">tails-biased (30%)</option></select></label>
+    <label for="a3you">Your points on heads: <select id="a3you"><option>1</option><option>2</option><option selected>3</option><option>5</option></select></label>
+    <label for="a3them">Friend's points on tails: <select id="a3them"><option>1</option><option selected>2</option><option>3</option><option>5</option></select></label>
+    <button class="btn secondary" id="a3run">Simulate 1,000 flips</button>
+  </div>
+  <div id="a3result" aria-live="polite"></div>
+  <div class="fb" id="a3fb" role="status"></div>
+  <div class="quiz" role="radiogroup" aria-labelledby="a3q">
+    <p id="a3q"><strong>Checkpoint.</strong> With the biased 70% coin, how could you make the game fair?</p>
+    <label><input type="radio" name="a3" value="a"> Give your friend more points per tail so expected gain balances</label>
+    <label><input type="radio" name="a3" value="b"> Impossible — a biased coin can never be fair</label>
+    <label><input type="radio" name="a3" value="c"> Give yourself more points on heads</label>
+  </div>
+  <h3>Final challenge — describe your own fair game</h3>
+  <p>Invent a points rule that is fair even with a biased coin (e.g. "I get 3 on heads, friend gets 7 on tails, on the 70% coin"). Explain in one or two sentences why the expected advantage is equal.</p>
+  <textarea id="a3text" maxlength="240" aria-label="Describe your fair game and why it is fair"></textarea>
+  <div class="fb" id="a3fb2" role="status"></div>
+  <div class="controls">
+    <button class="btn" id="a3check">Check</button>
+    <button class="btn ghost" id="a3hint">Hint</button>
+    <button class="btn secondary" id="a3done" disabled>File your report</button>
+  </div>
+</section>
+
+<section id="view-sum" class="summary-box" hidden>
+  <h2>Report filed — detective's summary</h2>
+  <div id="sumbody"></div>
+  <h3>Your fair-game design</h3>
+  <p id="sumtext" style="font-style:italic"></p>
+  <h3>Carry this forward</h3>
+  <p>When someone claims a pattern, ask: <strong>How big was the sample? What does theory predict? Is the game rigged — or just random?</strong> Try tonight: flip a real coin 20 times, note the run, then ask whether 12 heads would surprise you.</p>
+  <button class="btn secondary" id="resetall">Restart the labs</button>
+</section>
+
+<footer>
+  <p><strong>About the simulations.</strong> Coins, dice and games are simulated in your browser with a seeded generator (see README/EDUCATOR_GUIDE). No real money, gambling or personal data is involved; all names and places are fictional.</p>
+</footer>
+</div>
+
+<script>
+"use strict";
+function mulberry32(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+let rng=mulberry32(31337);
+const S={done:{a1:false,a2:false,a3:false},runs1:[],runs2:[],gameRuns:0,seed:31337};
+const $=id=>document.getElementById(id);
+const VIEWS=["intro","a1","a2","a3","sum"];
+function show(v){VIEWS.forEach(x=>{$("view-"+x).hidden=x!==v});
+  VIEWS.forEach(x=>{const b=$("tab-"+x);if(b)b.setAttribute("aria-current",x===v?"true":"false")});
+  const b=$("tab-"+v);if(b)b.focus();}
+VIEWS.forEach(v=>{const b=$("tab-"+v);if(b)b.onclick=()=>show(v)});
+function progress(){const n=[S.done.a1,S.done.a2,S.done.a3].filter(Boolean).length;
+  $("progfill").style.width=(n/3*100)+"%";document.querySelector('.prog').setAttribute('aria-valuenow',n);
+  if(n===3)$("tab-sum").disabled=false;}
+$("start").onclick=()=>show("a1");
+
+/* ---------- Lab 1 ---------- */
+function coinRun(n,p){
+  let h=0;for(let i=0;i<n;i++)if(rng()<p)h++;
+  S.runs1.push({n,h,p});
+}
+function renderA1(){
+  const w=560,h=240,pad=42;const runs=S.runs1;
+  const rows=runs.map((r,i)=>`<tr><td>#${i+1}</td><td>${r.n}</td><td>${r.h}</td><td>${(r.h/r.n*100).toFixed(1)}%</td><td>${(r.p*100).toFixed(0)}%</td></tr>`).join("");
+  $("a1rows").innerHTML=rows||'<tr><td colspan="5" class="small">No experiments yet.</td></tr>';
+  let s=`<svg class="chart" viewBox="0 0 ${w} ${h}" role="presentation">`;
+  const y=v=>h-pad-(v/100)*(h-2*pad);
+  for(let g=0;g<=100;g+=25){s+=`<line x1="${pad}" y1="${y(g)}" x2="${w-14}" y2="${y(g)}" stroke="#33453e"/><text x="${pad-8}" y="${y(g)+4}" text-anchor="end">${g}%</text>`}
+  const py=y(+document.querySelector('#a1bias').value*100);
+  s+=`<line class="exp" x1="${pad}" y1="${py}" x2="${w-14}" y2="${py}"/><text x="${w-16}" y="${py-6}" text-anchor="end" fill="#93c47d">expected ${(+document.querySelector('#a1bias').value*100).toFixed(0)}%</text>`;
+  runs.forEach((r,i)=>{const x=pad+26+i*Math.min(58,(w-pad-56)/Math.max(runs.length,1));
+    s+=`<rect class="bar" x="${x}" y="${y(r.h/r.n*100)}" width="32" height="${Math.max(h-pad-y(r.h/r.n*100),2)}"><title>${r.n} flips: ${r.h} heads</title></rect>`;});
+  $("a1chart").innerHTML=s+"</svg>";
+}
+document.querySelectorAll('[data-coin]').forEach(b=>b.onclick=()=>{
+  coinRun(+b.dataset.coin,+document.querySelector('#a1bias').value);renderA1();
+  const r=S.runs1[S.runs1.length-1];
+  $("a1fb").className="fb show";
+  $("a1fb").innerHTML=`<span class="mark">Run done:</span> ${r.n} flips → ${r.h} heads (${(r.h/r.n*100).toFixed(1)}%). ${r.n<=10&&r.h/r.n>0.6?"A small sample can land far off — that alone proves nothing.":""}`;});
+$("a1hint").onclick=()=>{$("a1fb").className="fb show";$("a1fb").innerHTML='<span class="mark">Hint:</span> run "Flip 10" three times — the answers jump around. Then run "Flip 1,000" and compare the gap to the green line.'};
+$("a1check").onclick=()=>{const sel=document.querySelector('input[name=a1]:checked');
+  if(!S.runs1.length){$("a1fb").className="fb show bad";$("a1fb").innerHTML='<span class="mark">?</span> Run at least one experiment first.';return}
+  if(!sel){$("a1fb").className="fb show bad";$("a1fb").innerHTML='<span class="mark">?</span> Pick an answer first.';return}
+  if(sel.value==="b"){$("a1fb").className="fb show good";$("a1fb").innerHTML='<span class="mark">Correct.</span> In 10 flips, 7 heads happens about 12% of the time on a fair coin — unusual, not impossible. Bigger samples squeeze the wiggle room.';S.done.a1=true;$("a1next").disabled=false;progress()}
+  else{$("a1fb").className="fb show bad";$("a1fb").innerHTML='<span class="mark">Not quite.</span> A fair coin gives 7+ heads in 10 flips roughly one time in eight. Try a 1,000-flip run and look at the distance to the expected line.'}};
+$("a1next").onclick=()=>show("a2");
+
+/* ---------- Lab 2 ---------- */
+const WAYS={2:1,3:2,4:3,5:4,6:5,7:6,8:5,9:4,10:3,11:2,12:1};
+function diceRun(n){const counts={};for(let i=2;i<=12;i++)counts[i]=0;
+  for(let i=0;i<n;i++){const a=1+(rng()*6|0),b2=1+(rng()*6|0);counts[a+b2]++}
+  S.runs2.push(counts);}
+function renderA2(){
+  const w=560,h=250,pad=42;
+  const tot={};for(let i=2;i<=12;i++)tot[i]=0;let N=0;
+  S.runs2.forEach(c=>{for(let i=2;i<=12;i++)tot[i]+=c[i];N+=Object.values(c)[0]?Object.values(c).reduce((a,b)=>a+b):0});
+  let s=`<svg class="chart" viewBox="0 0 ${w} ${h}" role="presentation">`;
+  const maxp=Math.max(...Object.keys(tot).map(i=>N?tot[i]/N*100:0),18);
+  const y=v=>h-pad-(v/maxp)*(h-2*pad);
+  for(let g=0;g<=maxp;g+=5){s+=`<line x1="${pad}" y1="${y(g)}" x2="${w-14}" y2="${y(g)}" stroke="#33453e"/><text x="${pad-8}" y="${y(g)+4}" text-anchor="end">${g}%</text>`}
+  for(let i=2;i<=12;i++){const x=pad+12+(i-2)*46,obs=N?tot[i]/N*100:0,exp=WAYS[i]/36*100;
+    s+=`<rect class="bar" x="${x}" y="${y(obs)}" width="26" height="${Math.max(h-pad-y(obs),1)}"/>`;
+    s+=`<line x1="${x-3}" y1="${y(exp)}" x2="${x+29}" y2="${y(exp)}" stroke="#93c47d" stroke-width="2" stroke-dasharray="4 3"/>`;
+    s+=`<text class="axislbl" x="${x+13}" y="${h-pad+16}" text-anchor="middle">${i}</text>`;}
+  s+=`<text x="${w-16}" y="20" text-anchor="end" fill="#93c47d">dashes = theory</text>`;
+  $("a2chart").innerHTML=s+"</svg>";
+  $("a2rows").innerHTML=Object.keys(tot).map(i=>`<tr><td>${i}</td><td>${N?(tot[i]/N*100).toFixed(1):"—"}</td><td>${(WAYS[i]/36*100).toFixed(1)}</td><td>${WAYS[i]}</td></tr>`).join("");
+}
+renderA2();
+document.querySelectorAll('[data-dice]').forEach(b=>b.onclick=()=>{diceRun(+b.dataset.dice);renderA2();
+  $("a2fb").className="fb show";$("a2fb").innerHTML='<span class="mark">Rolled.</span> Compare the bars to the green dashes — the middle totals tower over the edges.';});
+$("a2hint").onclick=()=>{$("a2fb").className="fb show";$("a2fb").innerHTML='<span class="mark">Hint:</span> count the ways in the table: 7 can be 1+6, 2+5, 3+4, 4+3, 5+2, 6+1 — six doors. 12 has exactly one.'};
+$("a2check").onclick=()=>{const sel=document.querySelector('input[name=a2]:checked');
+  if(!S.runs2.length){$("a2fb").className="fb show bad";$("a2fb").innerHTML='<span class="mark">?</span> Roll some dice first.';return}
+  if(!sel){$("a2fb").className="fb show bad";$("a2fb").innerHTML='<span class="mark">?</span> Pick an answer first.';return}
+  if(sel.value==="b"){$("a2fb").className="fb show good";$("a2fb").innerHTML='<span class="mark">Correct.</span> Equal faces, unequal totals — 7 owns six of the 36 combinations. The bars hug the theory dashes as runs pile up.';S.done.a2=true;$("a2next").disabled=false;progress()}
+  else{$("a2fb").className="fb show bad";$("a2fb").innerHTML='<span class="mark">Not quite.</span> Each die is fair — the trick is how many pairs add to each total. Check the "Ways" column.'}};
+$("a2next").onclick=()=>show("a3");
+
+/* ---------- Lab 3 ---------- */
+$("a3run").onclick=()=>{
+  const p=+document.querySelector('#a3coin').value;
+  const you=+document.querySelector('#a3you').value,them=+document.querySelector('#a3them').value;
+  let ys=0,ts=0;for(let i=0;i<1000;i++){if(rng()<p)ys+=you;else ts+=them}
+  const ey=(p*you).toFixed(2),et=((1-p)*them).toFixed(2);
+  S.gameRuns++;
+  $("a3result").innerHTML=`<table class="dt"><caption>Result after 1,000 simulated flips (run ${S.gameRuns})</caption>
+  <tr><th>Side</th><th>Expected per flip</th><th>Simulated total</th></tr>
+  <tr><td>You (heads)</td><td>${ey} pts</td><td>${ys} pts</td></tr>
+  <tr><td>Friend (tails)</td><td>${et} pts</td><td>${ts} pts</td></tr></table>`;
+  $("a3fb").className="fb show";
+  $("a3fb").innerHTML=Math.abs(ey-et)<0.15
+    ?'<span class="mark">Balanced!</span> Expected gains are nearly equal — this looks like a fair game.'
+    :`<span class="mark">Lopsided.</span> Expected gain ${ey} vs ${et} — one side has the better deal. Adjust the points and try again.`;};
+$("a3hint").onclick=()=>{$("a3fb").className="fb show";$("a3fb").innerHTML='<span class="mark">Hint:</span> expected gain = chance × points. On a 70% coin, your side is 0.7×pts vs 0.3×pts — make the products equal.'};
+$("a3check").onclick=()=>{const sel=document.querySelector('input[name=a3]:checked');const txt=$("a3text").value.trim();
+  if(!S.gameRuns){$("a3fb").className="fb show bad";$("a3fb").innerHTML='<span class="mark">?</span> Simulate at least one game first.';return}
+  if(!sel){$("a3fb").className="fb show bad";$("a3fb").innerHTML='<span class="mark">?</span> Pick an answer first.';return}
+  if(sel.value==="a"){
+    if(txt.length<25){$("a3fb2").className="fb show bad";$("a3fb2").innerHTML='<span class="mark">Almost.</span> Checkpoint right — now describe your own fair game below.';return}
+    $("a3fb").className="fb show good";$("a3fb").innerHTML='<span class="mark">Correct.</span> Fairness lives in expected gain, not win-rate: 0.7×3 ≈ 0.3×7 balances a 70% coin.';
+    $("a3fb2").className="fb show good";$("a3fb2").innerHTML='<span class="mark">Design noted.</span> An evidence-based rule — exactly what a detective writes down.';
+    S.done.a3=true;$("a3done").disabled=false;progress()}
+  else{$("a3fb").className="fb show bad";$("a3fb").innerHTML='<span class="mark">Not quite.</span> Try it: pick the 70% coin, 3 pts for you, 7 for your friend, simulate — watch the totals.'}};
+$("a3done").onclick=()=>{
+  $("sumtext").textContent="“"+$("a3text").value.trim()+"”";
+  $("sumbody").innerHTML='<p>You watched small samples wobble, totals obey combination counts, and a biased coin get balanced by smarter points. The detective rule: <strong>compare what happened to what theory predicted — and check the sample size before accusing the coin.</strong></p>';
+  show("sum")};
+$("resetall").onclick=()=>{S.done={a1:false,a2:false,a3:false};S.runs1=[];S.runs2=[];S.gameRuns=0;S.seed=31337;rng=mulberry32(31337);
+  renderA1();renderA2();$("a3result").innerHTML="";
+  document.querySelectorAll('input[type=radio]').forEach(r=>r.checked=false);
+  ["a1fb","a2fb","a3fb","a3fb2"].forEach(i=>{$(i).className="fb";$(i).innerHTML=""});
+  $("a3text").value="";$("a1pred").value="";$("a1next").disabled=$("a2next").disabled=$("a3done").disabled=true;$("tab-sum").disabled=true;
+  progress();show("intro")};
+renderA1();
+</script>
+</body>
+</html>
